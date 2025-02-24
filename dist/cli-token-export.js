@@ -20,7 +20,7 @@ function exportTokenData() {
         const groupedData = yield processTokens();
         const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
         for (const explorer in groupedData) {
-            const filePath = path.join(__dirname, `../output/kleros-tokens-${explorer}-${timestamp}.csv`);
+            const filePath = path.join(__dirname, `../output/tokens/kleros-tokens-${explorer}-${timestamp}.csv`);
             const csvContent = stringify(groupedData[explorer], {
                 header: true,
                 columns: [

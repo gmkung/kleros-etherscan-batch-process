@@ -26,7 +26,7 @@ This repository contains scripts for processing and exporting Kleros tags and to
    Ensure you have [Node.js](https://nodejs.org/) installed, then run:
 
    ```bash
-   npm install
+   yarn install
    ```
 
 3. **Compile TypeScript:**
@@ -34,7 +34,7 @@ This repository contains scripts for processing and exporting Kleros tags and to
    Compile the TypeScript files to JavaScript:
 
    ```bash
-   npx tsc
+   tsc
    ```
 
 ## Usage

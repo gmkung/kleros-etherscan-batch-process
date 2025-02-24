@@ -7,13 +7,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import path from "path";
-import { fileURLToPath } from "url";
 import { getDataFromCurate, getExplorerNameBasedOnRichAddress, } from "./utils.js";
 import { processKlerosTags } from "./kleros-tag-processor.js";
-// Get the directory name of the current module
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 const registry = "0xee1502e29795ef6c2d60f8d7120596abe3bad990".toLowerCase();
 const endpoint = "https://api.goldsky.com/api/public/project_cm5y7hx91t6zd01vzfnfchtf9/subgraphs/legacy-curate-gnosis/v1.1.4/gn";
 const contractAddressField = "Address"; // Configure the field name here

@@ -20,7 +20,7 @@ function main() {
         const groupedData = yield processKlerosTags();
         const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
         for (const explorer in groupedData) {
-            const filePath = path.join(__dirname, `../output/kleros-tags-${explorer}-${timestamp}.csv`);
+            const filePath = path.join(__dirname, `../output/tags/kleros-tags-${explorer}-${timestamp}.csv`);
             const csvContent = stringify(groupedData[explorer], {
                 header: true,
                 columns: [

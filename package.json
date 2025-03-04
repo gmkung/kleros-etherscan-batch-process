@@ -3,13 +3,22 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "scripts": {
+    "build": "tsc --project ./tsconfig.json",
+    "retrieve": "node dist/src/3_export-to-csv-etherscan-v2.mjs",
+    "merge": "node dist/src/4_combine_CSVs.mjs"
+  },
   "dependencies": {
     "@types/node": "^22.13.4",
     "axios": "^1.7.9",
     "csv-stringify": "^6.5.2",
     "node-fetch": "^3.3.2",
     "typescript": "^5.7.3",
-    "undici-types": "^7.3.0"
+    "undici-types": "^7.3.0",
+    "@types/papaparse": "^5.3.14",
+    "dotenv": "^10.0.0",
+    "fs": "^0.0.1-security",
+    "papaparse": "^5.4.1"
   },
   "type": "module"
 }

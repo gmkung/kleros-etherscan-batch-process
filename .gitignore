@@ -1,0 +1,8 @@
+.gitmodules
+submodules/
+.env
+error.txt
+dist/
+data.json
+!logs/
+!exports/

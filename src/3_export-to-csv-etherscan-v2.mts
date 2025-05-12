@@ -2,6 +2,8 @@ import { promises as fs } from "fs";
 import { join, dirname, basename } from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
+import { Tag, RawTag } from "./types.js";
+import { transformData } from "./utils.js";
 
 dotenv.config();
 
@@ -15,14 +17,6 @@ interface SubmoduleData {
   url: string;
   commit: string;
   chainId: number;
-}
-
-interface Tag {
-  "Contract Address": string;
-  "Project Name": string;
-  "Public Name Tag": string;
-  "UI/Website Link": string;
-  "Public Note": string;
 }
 
 interface FailedSubmodule {
@@ -61,28 +55,14 @@ function getCurrentUTCDateForSheets(): string {
   return new Date().toISOString().split("T")[0];
 }
 
-function transformData(item: Tag): Record<string, string> {
-  return {
-    "Address": item["Contract Address"].split(":")[2],
-    "Nametag": `${item["Project Name"].trim()}: ${item["Public Name Tag"].trim()}`,
-    "Website": item["UI/Website Link"],
-    "Short Description": item["Public Name Tag"].trim(),
-    "Public Note": item["Public Note"]
-  };
-}
+function jsonToCSV(items: RawTag[]): string {
+  const header = Object.keys(transformData(items[0])) as (keyof Tag)[];
 
-function jsonToCSV(items: Tag[]): string {
-  const header: string[] = [
-    "Address",
-    "Nametag",
-    "Website",
-    "Short Description",
-    "Public Note"
-  ];
-
-  const rows = items.map(item => {
+  const rows = items.map((item) => {
     const transformed = transformData(item);
-    return header.map(col => JSON.stringify(transformed[col] || "")).join(",");
+    return header
+      .map((col) => JSON.stringify(transformed[col] || ""))
+      .join(",");
   });
 
   return [header.join(","), ...rows].join("\r\n");

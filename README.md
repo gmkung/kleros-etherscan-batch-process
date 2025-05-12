@@ -19,8 +19,8 @@ This repository contains scripts for processing and exporting Kleros tags and to
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/yourusername/kleros-etherscan-github-workflow.git
-   cd kleros-etherscan-github-workflow
+   git clone https://github.com/gmkung/kleros-etherscan-batch-process.git
+   cd kleros-etherscan-batch-process
    ```
 
 2. **Install dependencies:**
@@ -72,6 +72,7 @@ The Address Tags Query (ATQ) process allows for batch retrieval of tags from mul
 #### Prerequisites
 
 Before running the ATQ scripts, ensure you have:
+
 - Git
 - Node.js (Version 14 or higher recommended)
 - Yarn package manager
@@ -79,6 +80,7 @@ Before running the ATQ scripts, ensure you have:
 #### Setup
 
 1. **Create a .env file** with The Graph's API Key:
+
    ```
    THEGRAPH_API_KEY=your_api_key_here
    ```
@@ -91,29 +93,34 @@ Before running the ATQ scripts, ensure you have:
 #### Running the ATQ Process
 
 1. **Fetch and update submodules**:
+
    ```bash
    ./1_fetch.sh && ./2_pull_submodules.sh
    ```
 
 2. **Export tags to CSV in Etherscan format**:
+
    ```bash
    yarn build && yarn retrieve
    ```
+
    This will generate CSV files in the `dist/exports` directory.
 
 3. **Combined workflow** (fetch, update, build, and export):
    ```bash
-   ./1_fetch.sh && ./2_pull_submodules.sh && yarn build && yarn start
+   ./1_fetch.sh && ./2_pull_submodules.sh && yarn build && yarn retrieve
    ```
 
 #### Testing a Specific Module
 
 To test a specific ATQ module:
+
 ```bash
 ./atq_unit_test.sh <git repo URL> <commitID> <chainID>
 ```
 
 Example:
+
 ```bash
 ./atq_unit_test.sh https://github.com/greentea135/aave-v3-tokens-atq-module.git 2b0edde 1
 ```
@@ -121,6 +128,7 @@ Example:
 #### Counting Entries
 
 To count the total number of contract tags retrieved:
+
 ```bash
 find ./dist/exports -name "*.csv" -type f -exec sh -c 'total=0; for file do count=$(grep -c "" "$file"); echo "$file: $count lines"; total=$((total + count)); done; echo "Total: $total lines"' sh {} +
 ```
@@ -139,6 +147,7 @@ find ./dist/exports -name "*.csv" -type f -exec sh -c 'total=0; for file do coun
 - **dist/**: Contains the compiled JavaScript files.
 
 - **output/**: Directory where the individual export CSV files are saved.
+
   - **tags/**: Contains CSV files with Kleros tags data.
   - **tokens/**: Contains CSV files with Kleros tokens data.
 

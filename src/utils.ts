@@ -1,4 +1,5 @@
 import axios from "axios";
+import { Tag, RawTag } from "./types.js";
 
 export async function getDataFromCurate(registry: string, endpoint: string) {
   let skip = 0;
@@ -109,4 +110,42 @@ export function getCurrentUTCDateForSheets() {
   const hours = now.getUTCHours().toString().padStart(2, "0");
   const minutes = now.getUTCMinutes().toString().padStart(2, "0");
   return `${month}/${day}/${year} ${hours}:${minutes} UTC`;
+}
+
+export function transformData(item: RawTag): Tag {
+  // Create the full nametag
+  const projectName = item["Project Name"].trim();
+  const publicNameTag = item["Public Name Tag"].trim();
+  const fullNametag = `${projectName}: ${publicNameTag}`;
+
+  // Truncate nametag if it exceeds 80 characters, ensuring project name ends with ...
+  let nametag = fullNametag;
+  if (fullNametag.length > 80) {
+    // Calculate available space for project name (accounting for ": " and public name tag)
+    const availableSpace = 80 - (publicNameTag.length + 2); // +2 for ": "
+    if (availableSpace > 3) {
+      // Need at least 3 chars for "..."
+      const truncatedProjectName =
+        projectName.substring(0, availableSpace - 3) + "...";
+      nametag = `${truncatedProjectName}: ${publicNameTag}`;
+    } else {
+      // If we can't fit even a minimal project name, just use the public name tag
+      nametag = publicNameTag.substring(0, 80);
+    }
+  }
+
+  // Format public note with Kleros attribution
+  const publicNote = item["Public Note"] || "";
+  const attribution = 'This nametag was submitted by <a href="https://klerosscout.eth.limo" target="_blank" rel="nofollow">Kleros Scout</a>.';
+  const formattedPublicNote = publicNote
+    ? `${publicNote}${!/[.!?]$/.test(publicNote) ? ". " : " "}${attribution}`
+    : attribution;
+
+  return {
+    Address: item["Contract Address"].split(":")[2],
+    Nametag: nametag,
+    Website: item["UI/Website Link"],
+    "Short Description": item["Public Name Tag"].trim(),
+    "Public Note": formattedPublicNote,
+  };
 }

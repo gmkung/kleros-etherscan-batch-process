@@ -3,7 +3,7 @@ import { join, dirname, basename } from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
 import { Tag, RawTag } from "./types.js";
-import { transformTagData } from "./utils.js";
+import { transformTagData, chainIdToExplorer } from "./utils.js";
 
 dotenv.config();
 
@@ -24,33 +24,6 @@ interface FailedSubmodule {
   commit: string;
   dir: string;
   error: string;
-}
-
-function chainIdToExplorer(chainId: number): string {
-  const chainMap: { [key: number]: string } = {
-    1: "etherscan.io",
-    10: "optimistic.etherscan.io",
-    56: "bscscan.com",
-    100: "gnosisscan.io",
-    137: "polygonscan.com",
-    8453: "basescan.org",
-    42161: "arbiscan.io",
-    1284: "moonscan.io",
-    59144: "lineascan.build",
-    250: "ftmscan.com",
-    324: "era.zksync.network",
-    1285: "moonriver.moonscan.io",
-    43114: "snowscan.xyz",
-    25: "cronoscan.com",
-    199: "bttcscan.com",
-    1101: "zkevm.polygonscan.com",
-    1111: "wemixscan.com",
-    534352: "scrollscan.com",
-    42220: "celoscan.io",
-    81457: "blastscan.io",
-    146: "sonicscan.org",
-  };
-  return chainMap[chainId] || "Unknown ChainID";
 }
 
 function getCurrentUTCDateForSheets(): string {

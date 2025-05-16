@@ -58,52 +58,7 @@ export function getExplorerNameBasedOnRichAddress(richAddress: string) {
   if (!match) return "Invalid address format";
 
   const number = parseInt(match[1], 10);
-  switch (number) {
-    case 1:
-      return "etherscan.io";
-    case 10:
-      return "optimistic.etherscan.io";
-    case 56:
-      return "bscscan.com";
-    case 100:
-      return "gnosisscan.io";
-    case 137:
-      return "polygonscan.com";
-    case 8453:
-      return "basescan.org";
-    case 42161:
-      return "arbiscan.io";
-    case 1284:
-      return "moonscan.io";
-    case 59144:
-      return "lineascan.build";
-    case 250:
-      return "ftmscan.com";
-    case 324:
-      return "era.zksync.network";
-    case 1285:
-      return "moonriver.moonscan.io";
-    case 43114:
-      return "snowscan.xyz";
-    case 25:
-      return "cronoscan.com";
-    case 199:
-      return "bttcscan.com";
-    case 1101:
-      return "zkevm.polygonscan.com";
-    case 1111:
-      return "wemixscan.com";
-    case 534352:
-      return "scrollscan.com";
-    case 42220:
-      return "celoscan.io";
-    case 81457:
-      return "blastscan.io";
-    case 146:
-      return "sonicscan.org";
-    default:
-      return "Unknown chainId";
-  }
+  return chainIdToExplorer(number);
 }
 
 export function getCurrentUTCDateForSheets() {
@@ -228,4 +183,33 @@ export function transformTokenData(
     explorer,
     chainid,
   };
+}
+
+// Shared chain id to explorer mapping
+export const CHAIN_ID_TO_EXPLORER: { [key: number]: string } = {
+  1: "etherscan.io",
+  10: "optimistic.etherscan.io",
+  56: "bscscan.com",
+  100: "gnosisscan.io",
+  137: "polygonscan.com",
+  8453: "basescan.org",
+  42161: "arbiscan.io",
+  1284: "moonscan.io",
+  59144: "lineascan.build",
+  250: "ftmscan.com",
+  324: "era.zksync.network",
+  1285: "moonriver.moonscan.io",
+  43114: "snowscan.xyz",
+  25: "cronoscan.com",
+  199: "bttcscan.com",
+  1101: "zkevm.polygonscan.com",
+  1111: "wemixscan.com",
+  534352: "scrollscan.com",
+  42220: "celoscan.io",
+  81457: "blastscan.io",
+  146: "sonicscan.org",
+};
+
+export function chainIdToExplorer(chainId: number): string {
+  return CHAIN_ID_TO_EXPLORER[chainId] || "Unknown ChainID";
 }

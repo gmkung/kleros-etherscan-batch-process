@@ -37,8 +37,8 @@ async function main() {
         "Address",
         "Nametag",
         "Website",
-        "Short Description",
         "Public Note",
+        "Chain ID"
       ],
     });
     fs.writeFileSync(filePath, csvContent);

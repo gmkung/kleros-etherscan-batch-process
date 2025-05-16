@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Tag, RawTag } from "./types.js";
+import { Tag, RawTag, Token, RawToken } from "./types.js";
 
 export async function getDataFromCurate(registry: string, endpoint: string) {
   let skip = 0;
@@ -97,6 +97,10 @@ export function getExplorerNameBasedOnRichAddress(richAddress: string) {
       return "scrollscan.com";
     case 42220:
       return "celoscan.io";
+    case 81457:
+      return "blastscan.io";
+    case 146:
+      return "sonicscan.org";
     default:
       return "Unknown chainId";
   }
@@ -112,7 +116,29 @@ export function getCurrentUTCDateForSheets() {
   return `${month}/${day}/${year} ${hours}:${minutes} UTC`;
 }
 
-export function transformData(item: RawTag): Tag {
+// Generic function to parse address from rich address string (for tokens/ATQ)
+export function parseAddressFromRichAddress(richAddress: string): string {
+  if (richAddress.startsWith("solana")) {
+    return richAddress.split(":")[2];
+  } else if (richAddress.startsWith("eip155")) {
+    return richAddress.split(":")[2];
+  } else {
+    return "Unknown chain";
+  }
+}
+
+// Generic function to parse chain id from rich address string (for tokens/ATQ)
+export function parseChainIdFromRichAddress(richAddress: string): string {
+  if (richAddress.startsWith("solana")) {
+    return "solana";
+  } else if (richAddress.startsWith("eip155")) {
+    return richAddress.split(":")[1];
+  } else {
+    return "Unknown chain";
+  }
+}
+
+export function transformTagData(item: RawTag): Tag {
   // Create the full nametag
   const projectName = item["Project Name"].trim();
   const publicNameTag = item["Public Name Tag"].trim();
@@ -136,16 +162,70 @@ export function transformData(item: RawTag): Tag {
 
   // Format public note with Kleros attribution
   const publicNote = item["Public Note"] || "";
-  const attribution = 'This nametag was submitted by <a href="https://klerosscout.eth.limo" target="_blank" rel="nofollow">Kleros Scout</a>.';
+  const attribution =
+    'This nametag was submitted by <a href="https://klerosscout.eth.limo" target="_blank" rel="nofollow">Kleros Scout</a>.';
   const formattedPublicNote = publicNote
     ? `${publicNote}${!/[.!?]$/.test(publicNote) ? ". " : " "}${attribution}`
     : attribution;
 
   return {
-    Address: item["Contract Address"].split(":")[2],
+    Address: parseAddressFromRichAddress(item["Contract Address"]),
     Nametag: nametag,
     Website: item["UI/Website Link"],
-    "Short Description": item["Public Name Tag"].trim(),
     "Public Note": formattedPublicNote,
+    "Chain ID": parseChainIdFromRichAddress(item["Contract Address"]),
+  };
+}
+
+// Token transformation function (moved from kleros-token-processor.ts)
+export function transformTokenData(
+  item: RawToken,
+  tagData: { [key: string]: any[] }
+): Token {
+  const contractAddressField = "Address";
+  const richAddress = item[contractAddressField];
+  const address = parseAddressFromRichAddress(richAddress);
+  const chainid = parseChainIdFromRichAddress(richAddress);
+  const explorer = getExplorerNameBasedOnRichAddress(richAddress);
+  let tagInfo: any = {};
+
+  // Use the explorer to find the tag info for the current address
+  const explorerData = tagData[explorer] || [];
+  const foundTag = explorerData.find((tag: any) => tag.Address === address);
+  if (foundTag) {
+    tagInfo = foundTag;
+  }
+  if (item["Website"]) {
+    console.log(item["Website"]);
+  }
+  return {
+    address,
+    tokenName: item["Name"] || "",
+    symbol: item["Symbol"] || "",
+    imageUrl: "https://cdn.kleros.link" + item["Logo"] || "",
+    tokenWebsite: item["Website"] || tagInfo.Website || "",
+    tokenEmail: "",
+    shortDescription: tagInfo["Short Description"] || "",
+    longDescription: tagInfo["Short Description"] || "",
+    publicNote: tagInfo["Public Note"] || "",
+    blog: "",
+    github: "",
+    reddit: "",
+    telegram: "",
+    slack: "",
+    wechat: "",
+    facebook: "",
+    linkedin: "",
+    xTwitter: "",
+    discord: "",
+    bitcointalk: "",
+    whitepaper: "",
+    ticketing: "",
+    opensea: "",
+    coingeckoTicker: "",
+    coinmarketcapTicker: "",
+    projectName: tagInfo.Nametag || item["Name"] || "",
+    explorer,
+    chainid,
   };
 }

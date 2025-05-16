@@ -1,7 +1,7 @@
 import {
   getDataFromCurate,
   getExplorerNameBasedOnRichAddress,
-  transformData,
+  transformTagData,
 } from "./utils.js";
 import { Tag, RawTag } from "./types.js";
 
@@ -21,7 +21,7 @@ export async function processKlerosTags(
   const groupedData: { [key: string]: Tag[] } = {};
 
   data.forEach((item) => {
-    const transformedItem = transformData(item);
+    const transformedItem = transformTagData(item);
     const explorer = getExplorerNameBasedOnRichAddress(
       item[contractAddressField]
     );

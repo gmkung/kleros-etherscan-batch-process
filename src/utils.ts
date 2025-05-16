@@ -78,7 +78,7 @@ export function parseAddressFromRichAddress(richAddress: string): string {
   } else if (richAddress.startsWith("eip155")) {
     return richAddress.split(":")[2];
   } else {
-    return "Unknown chain";
+    return "unknown";
   }
 }
 
@@ -89,7 +89,7 @@ export function parseChainIdFromRichAddress(richAddress: string): string {
   } else if (richAddress.startsWith("eip155")) {
     return richAddress.split(":")[1];
   } else {
-    return "Unknown chain";
+    return "unknown";
   }
 }
 

@@ -21,6 +21,11 @@ export async function getDataFromCurate(registry: string, endpoint: string) {
     }`;
 
     const response = await axios.post(endpoint, { query });
+    
+    if (!response.data || !response.data.data) {
+      throw new Error("GraphQL query failed or returned unexpected structure");
+    }
+    
     const data = response.data.data.litems;
     if (data.length === 0) break;
 
@@ -73,6 +78,11 @@ export function getCurrentUTCDateForSheets() {
 
 // Generic function to parse address from rich address string (for tokens/ATQ)
 export function parseAddressFromRichAddress(richAddress: string): string {
+  if (!richAddress) {
+    console.warn("parseAddressFromRichAddress received undefined/null richAddress:", richAddress);
+    return "unknown";
+  }
+  
   if (richAddress.startsWith("solana")) {
     return richAddress.split(":")[2];
   } else if (richAddress.startsWith("eip155")) {
@@ -150,9 +160,6 @@ export function transformTokenData(
   if (foundTag) {
     tagInfo = foundTag;
   }
-  if (item["Website"]) {
-    console.log(item["Website"]);
-  }
   return {
     address,
     tokenName: item["Name"] || "",
@@ -191,16 +198,20 @@ export const CHAIN_ID_TO_EXPLORER: { [key: number]: string } = {
   10: "optimistic.etherscan.io",
   56: "bscscan.com",
   100: "gnosisscan.io",
+  122: "fuse",
   137: "polygonscan.com",
   8453: "basescan.org",
   42161: "arbiscan.io",
   1284: "moonscan.io",
   59144: "lineascan.build",
   250: "ftmscan.com",
+  288: "boba",
   324: "era.zksync.network",
   1285: "moonriver.moonscan.io",
+  43111: "hemi",
   43114: "snowscan.xyz",
   25: "cronoscan.com",
+  196: "xlayer",
   199: "bttcscan.com",
   1101: "zkevm.polygonscan.com",
   1111: "wemixscan.com",
@@ -208,6 +219,8 @@ export const CHAIN_ID_TO_EXPLORER: { [key: number]: string } = {
   42220: "celoscan.io",
   81457: "blastscan.io",
   146: "sonicscan.org",
+  1313161554: "aurora",
+  1666600000: "harmony",
 };
 
 export function chainIdToExplorer(chainId: number): string {

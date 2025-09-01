@@ -6,3 +6,4 @@ dist/
 data.json
 !logs/
 !exports/
+ignore*

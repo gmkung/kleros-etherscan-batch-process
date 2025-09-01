@@ -8,7 +8,9 @@ fi
 
 #API_ENDPOINT="https://gateway-arbitrum.network.thegraph.com/api/${THEGRAPH_API_KEY}/deployments/id/QmeregtvXdwydExdwVBs5YEwNV4HC1DKqQoyRgTbkbvFA7"
 #API_ENDPOINT="https://api.studio.thegraph.com/query/61738/legacy-curate-gnosis/version/latest"
-API_ENDPOINT="https://api.studio.thegraph.com/query/61738/legacy-curate-gnosis/v0.1.1"
+#API_ENDPOINT="https://api.studio.thegraph.com/query/61738/legacy-curate-gnosis/v0.1.1"
+API_ENDPOINT=${THEGRAPH_API_KEY:+https://gateway.thegraph.com/api/${THEGRAPH_API_KEY}/subgraphs/id/9hHo5MpjpC1JqfD3BsgFnojGurXRHTrHWcUcZPPCo6m8}
+API_ENDPOINT=${API_ENDPOINT:-https://api.studio.thegraph.com/query/61738/legacy-curate-gnosis/v0.1.1}
 QUERY='{
   "query": "{ litems(first: 1000, skip: 0, orderBy: latestRequestSubmissionTime, where: {status: Registered, registryAddress: \"0xae6aaed5434244be3699c56e7ebc828194f26dc3\"}) { itemID metadata { props { type label value } } } }"
 }'

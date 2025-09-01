@@ -1,0 +1,68 @@
+[
+  {
+    "itemID": "0xf4f4e630a0191bec70c9f5dab9cdc210547646b2d525ce4da2a8e5bfee78f693",
+    "url": "https://github.com/gmkung/uniswap-v3-pools-atq-module.git",
+    "commit": "50c7a12",
+    "chainId": "1"
+  },
+  {
+    "itemID": "0xe5dc5fdc7593d7bdbf93c503411942f65408b690d0f18b9521887eeaa8aca6e5",
+    "url": "https://github.com/gmkung/uniswap-v2-pairs-atq-module.git",
+    "commit": "ff0ce56",
+    "chainId": "1"
+  },
+  {
+    "itemID": "0x2e0214f035488f8ed766bc6e21fa27d6c624ab744e229b51df125652128091b5",
+    "url": "https://github.com/greentea135/aave-v3-tokens-atq-module.git",
+    "commit": "ca6428f",
+    "chainId": "100"
+  },
+  {
+    "itemID": "0xca0645c0cf63237a579bc2f1ab7e407e2f0c89df908df290bb25007e11affaa3",
+    "url": "https://github.com/greentea135/aave-v3-tokens-atq-module.git",
+    "commit": "ca6428f",
+    "chainId": "56"
+  },
+  {
+    "itemID": "0x8d1139f7be1fce5f33682c12b3e7569674f240846b85224d1cb9f630789cd1b7",
+    "url": "https://github.com/greentea135/aave-v3-tokens-atq-module.git",
+    "commit": "8174f03",
+    "chainId": "8453"
+  },
+  {
+    "itemID": "0x4b4bd304573967e4798355d144895a935c0794bcb5a8888e0d22e5cffe683fac",
+    "url": "https://github.com/greentea135/silo-atq-module.git",
+    "commit": "36ad7ca",
+    "chainId": "1"
+  },
+  {
+    "itemID": "0x169e40731399cca0253ddc415eb5144b88eefd7813c3e1c3c9f3153000999357",
+    "url": "https://github.com/greentea135/karak-tokens-atq-module.git",
+    "commit": "02efa78",
+    "chainId": "42161"
+  },
+  {
+    "itemID": "0x1e61ed742113a38055b9863746e76829ff147c2790fe98cd05da89ede27af812",
+    "url": "https://github.com/greentea135/zerolend-tokens-atq-module.git",
+    "commit": "86f12cd",
+    "chainId": "59144"
+  },
+  {
+    "itemID": "0x6498c1c59e4ad46b23a14879f75fb5d271346d0b0b5a606b0e814ad720b080f0",
+    "url": "https://github.com/greentea135/zerolend-tokens-atq-module.git",
+    "commit": "86f12cd",
+    "chainId": "196"
+  },
+  {
+    "itemID": "0x9e5592daaf5d1927d00a07fbf76345c020d7b9f64ca9b271e93a86c0a5f5fb71",
+    "url": "https://github.com/greentea135/pancakeswap-v2-pools-atq-module.git",
+    "commit": "17f14ad",
+    "chainId": "1101"
+  },
+  {
+    "itemID": "0xfaaa3f02d9d15a57e6dc4b26391368721f3892c93159cfa52a11f47ae408e4f3",
+    "url": "https://github.com/greentea135/sushiswap-v2-pools-atq-module.git",
+    "commit": "e841ae4 ",
+    "chainId": "1284"
+  }
+]

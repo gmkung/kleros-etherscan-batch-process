@@ -44,7 +44,11 @@ If you just want to repeat the pull of all the modules and data again, combine a
 4. **Counting number of entries**
 If you want to find out the total number of contract tags that were retrieved by all the approved ATQ entries, run this (at the root directory).
 
-```find ./dist/exports -name "*.csv" -type f -exec sh -c 'total=0; for file do count=$(grep -c "" "$file"); echo "$file: $count lines"; total=$((total + count)); done; echo "Total: $total lines"' sh {} + ```
+**For regular exports:**
+```find ./dist/output/tags -name "*.csv" -type f -exec sh -c 'total=0; for file do count=$(grep -c "" "$file"); echo "$file: $count lines"; total=$((total + count)); done; echo "Total: $total lines"' sh {} + ```
+
+**For batch exports:**
+```find ./dist/batch_exports/tags -name "*.csv" -type f -exec sh -c 'total=0; for file do count=$(grep -c "" "$file"); echo "$file: $count lines"; total=$((total + count)); done; echo "Total: $total lines"' sh {} + ```
 
 > [!TIP]
 > Do you just want to test a specific module and commit easily? 

@@ -13,6 +13,9 @@ const DATA_FILE = join(__dirname, "../../data.json");
 const EXPORTS_DIR = join(__dirname, "../batch_exports/tags");
 const LOGS_DIR = join(__dirname, "../logs");
 
+// Maximum lines per file (including header)
+const MAX_LINES_PER_FILE = 100000;
+
 interface SubmoduleData {
   url: string;
   commit: string;
@@ -41,6 +44,53 @@ function jsonToCSV(items: RawTag[]): string {
   });
 
   return [header.join(","), ...rows].join("\r\n");
+}
+
+function splitDataIntoChunks<T>(data: T[], maxItemsPerChunk: number): T[][] {
+  const chunks: T[][] = [];
+  for (let i = 0; i < data.length; i += maxItemsPerChunk) {
+    chunks.push(data.slice(i, i + maxItemsPerChunk));
+  }
+  return chunks;
+}
+
+async function writeCSVChunks(
+  tags: RawTag[],
+  baseFileName: string,
+  exportsDir: string
+): Promise<void> {
+  const header = Object.keys(transformTagData(tags[0])) as (keyof Tag)[];
+  const maxDataRowsPerChunk = MAX_LINES_PER_FILE - 1; // -1 for header
+  
+  if (tags.length <= maxDataRowsPerChunk) {
+    // Single file - no splitting needed
+    const csv = jsonToCSV(tags);
+    await fs.writeFile(join(exportsDir, baseFileName), csv);
+    console.log(`Tags have been written to ${baseFileName}`);
+  } else {
+    // Split into multiple files
+    const chunks = splitDataIntoChunks(tags, maxDataRowsPerChunk);
+    const totalChunks = chunks.length;
+    
+    for (let i = 0; i < chunks.length; i++) {
+      const chunk = chunks[i];
+      const chunkNumber = i + 1;
+      const suffix = totalChunks > 1 ? `-part${chunkNumber.toString().padStart(3, '0')}` : '';
+      const chunkFileName = baseFileName.replace('.csv', `${suffix}.csv`);
+      
+      const csv = [header.join(","), ...chunk.map((item) => {
+        const transformed = transformTagData(item);
+        return header
+          .map((col) => JSON.stringify(transformed[col] || ""))
+          .join(",");
+      })].join("\r\n");
+      
+      await fs.writeFile(join(exportsDir, chunkFileName), csv);
+      console.log(`Tags chunk ${chunkNumber}/${totalChunks} written to ${chunkFileName} (${chunk.length} records)`);
+    }
+    
+    console.log(`Total: ${tags.length} tags split into ${totalChunks} files`);
+  }
 }
 
 async function fetchAndProcessSubmodules() {
@@ -79,16 +129,14 @@ async function fetchAndProcessSubmodules() {
           chainId.toString(),
           process.env.THEGRAPH_API_KEY
         );
-        console.log("Tags: ", tags);
+        // console.log("Tags: ", tags); // Commented out to avoid printing large data to console
         if (Array.isArray(tags) && tags.length > 0) {
-          const csv = jsonToCSV(tags);
           console.log(__dirname);
           const explorer = chainIdToExplorer(chainId);
           const datetime = getCurrentUTCDateForSheets();
-          const fileName = `kleros-batch-queried-tags-${commit}-${explorer}-${datetime}.csv`;
-          await fs.writeFile(join(EXPORTS_DIR, fileName), csv);
-
-          console.log(`Tags have been written to ${fileName}`);
+          const baseFileName = `kleros-batch-queried-tags-${commit}-${explorer}-${datetime}.csv`;
+          
+          await writeCSVChunks(tags, baseFileName, EXPORTS_DIR);
         }
       } catch (error) {
         console.error(`Error in processing submodule ${DIR_NAME}:`);

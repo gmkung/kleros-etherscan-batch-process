@@ -4,10 +4,14 @@ import {
   transformTagData,
 } from "./utils.js";
 import { Tag, RawTag } from "./types.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const registry = "0x66260c69d03837016d88c9877e61e08ef74c59f2".toLowerCase();
-const endpoint =
-  "https://api.goldsky.com/api/public/project_cm5y7hx91t6zd01vzfnfchtf9/subgraphs/legacy-curate-gnosis/v1.1.4/gn";
+const endpoint = process.env.THEGRAPH_API_KEY 
+  ? `https://gateway.thegraph.com/api/${process.env.THEGRAPH_API_KEY}/subgraphs/id/9hHo5MpjpC1JqfD3BsgFnojGurXRHTrHWcUcZPPCo6m8`
+  : "https://api.studio.thegraph.com/query/61738/legacy-curate-gnosis/v0.1.1";
 const contractAddressField = "Contract Address"; // Configure the field name here
 
 export async function processKlerosTags(
@@ -21,10 +25,14 @@ export async function processKlerosTags(
   const groupedData: { [key: string]: Tag[] } = {};
 
   data.forEach((item) => {
+    const contractAddress = item[contractAddressField];
+    if (!contractAddress) {
+      console.error("Item missing contract address field:", JSON.stringify(item, null, 2));
+      return; // Skip this item
+    }
+    
     const transformedItem = transformTagData(item);
-    const explorer = getExplorerNameBasedOnRichAddress(
-      item[contractAddressField]
-    );
+    const explorer = getExplorerNameBasedOnRichAddress(contractAddress);
     if (!groupedData[explorer]) {
       groupedData[explorer] = [];
     }

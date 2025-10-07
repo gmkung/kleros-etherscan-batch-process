@@ -18,10 +18,13 @@ USE_THEGRAPH=${USE_THEGRAPH:-false}
 if [ "$USE_THEGRAPH" = "true" ] && [ -n "$THEGRAPH_API_KEY" ]; then
   API_ENDPOINT="https://gateway.thegraph.com/api/${THEGRAPH_API_KEY}/subgraphs/id/9hHo5MpjpC1JqfD3BsgFnojGurXRHTrHWcUcZPPCo6m8"
   QUERY_TYPE="thegraph"
+  echo "📊 Using The Graph for GraphQL queries"
 else
   API_ENDPOINT="https://indexer.hyperindex.xyz/1a2f51c/v1/graphql"
   QUERY_TYPE="envio"
+  echo "📊 Using Envio for GraphQL queries"
 fi
+echo "   Endpoint: $API_ENDPOINT"
 
 # Build GraphQL query (dual support)
 if [ "$QUERY_TYPE" = "thegraph" ]; then

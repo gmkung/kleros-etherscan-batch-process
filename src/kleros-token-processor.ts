@@ -5,9 +5,13 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const registry = "0xee1502e29795ef6c2d60f8d7120596abe3bad990".toLowerCase();
-const endpoint = process.env.THEGRAPH_API_KEY 
-  ? `https://gateway.thegraph.com/api/${process.env.THEGRAPH_API_KEY}/subgraphs/id/9hHo5MpjpC1JqfD3BsgFnojGurXRHTrHWcUcZPPCo6m8`
-  : "https://api.studio.thegraph.com/query/61738/legacy-curate-gnosis/v0.1.1";
+
+// Default to Envio, use The Graph only if USE_THEGRAPH=true
+const endpoint =
+  process.env.USE_THEGRAPH === "true" && process.env.THEGRAPH_API_KEY
+    ? `https://gateway.thegraph.com/api/${process.env.THEGRAPH_API_KEY}/subgraphs/id/9hHo5MpjpC1JqfD3BsgFnojGurXRHTrHWcUcZPPCo6m8`
+    : "https://indexer.hyperindex.xyz/1a2f51c/v1/graphql";
+
 const contractAddressField = "Address"; // Configure the field name here
 
 export async function processTokens() {
@@ -18,10 +22,13 @@ export async function processTokens() {
   data.forEach((item) => {
     // Skip items without the required Address field
     if (!item[contractAddressField]) {
-      console.warn("Skipping item without Address field:", JSON.stringify(item, null, 2));
+      console.warn(
+        "Skipping item without Address field:",
+        JSON.stringify(item, null, 2)
+      );
       return;
     }
-    
+
     const transformedItem = transformTokenData(item, tagData);
     const explorer = transformedItem.explorer;
     if (!groupedData[explorer]) {

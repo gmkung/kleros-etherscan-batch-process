@@ -1,33 +1,90 @@
 import axios from "axios";
 import { Tag, RawTag, Token, RawToken } from "./types.js";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+// Centralized Envio toggle - set to false to use The Graph instead
+const USE_ENVIO = process.env.USE_THEGRAPH !== "true";
+
+// Log which service is being used (only once)
+let hasLoggedService = false;
 
 export async function getDataFromCurate(registry: string, endpoint: string) {
-  let skip = 0;
+  let offset = 0;
   const dataArray: any[] = [];
+  const limit = 1000;
+
+  // Log service selection on first call
+  if (!hasLoggedService) {
+    console.log(
+      `📊 Using ${USE_ENVIO ? "Envio" : "The Graph"} for GraphQL queries`
+    );
+    console.log(`   Endpoint: ${endpoint}`);
+    hasLoggedService = true;
+  }
 
   while (true) {
-    const query = `
-      {litems(first: 1000, skip: ${skip}, where:{status: Registered, registryAddress:"${registry}"}) {
-        itemID
-        latestRequestSubmissionTime
-        metadata{
-          props {
-            type
-            label
-            value
+    let query: string;
+
+    if (USE_ENVIO) {
+      // Envio (Hasura) query format
+      query = `
+        {
+          LItem(
+            limit: ${limit},
+            offset: ${offset},
+            order_by: {latestRequestSubmissionTime: asc},
+            where: {
+              registryAddress: {_eq: "${registry}"},
+              status: {_eq: "Registered"}
+            }
+          ) {
+            itemID
+            latestRequestSubmissionTime
+            props {
+              label
+              value
+            }
           }
-        }
-      }
-    }`;
+        }`;
+    } else {
+      // The Graph query format
+      query = `
+        {
+          litems(
+            first: ${limit},
+            skip: ${offset},
+            where: {
+              status: Registered,
+              registryAddress: "${registry}"
+            }
+          ) {
+            itemID
+            latestRequestSubmissionTime
+            metadata {
+              props {
+                type
+                label
+                value
+              }
+            }
+          }
+        }`;
+    }
 
     const response = await axios.post(endpoint, { query });
-    
+
     if (!response.data || !response.data.data) {
       throw new Error("GraphQL query failed or returned unexpected structure");
     }
-    
-    const data = response.data.data.litems;
-    if (data.length === 0) break;
+
+    // Handle both response formats
+    const data = USE_ENVIO
+      ? response.data.data.LItem
+      : response.data.data.litems;
+
+    if (!data || data.length === 0) break;
 
     data.forEach((litem: any) => {
       try {
@@ -36,8 +93,11 @@ export async function getDataFromCurate(registry: string, endpoint: string) {
           latestRequestSubmissionTime: litem.latestRequestSubmissionTime,
         };
 
-        if (litem.metadata && Array.isArray(litem.metadata.props)) {
-          litem.metadata.props.forEach((prop: any) => {
+        // Handle both metadata structures
+        const props = USE_ENVIO ? litem.props : litem.metadata?.props;
+
+        if (props && Array.isArray(props)) {
+          props.forEach((prop: any) => {
             flattenedItem[prop.label] = prop.value;
           });
         }
@@ -48,7 +108,7 @@ export async function getDataFromCurate(registry: string, endpoint: string) {
       }
     });
 
-    skip += 1000;
+    offset += limit;
   }
 
   return dataArray;
@@ -79,10 +139,13 @@ export function getCurrentUTCDateForSheets() {
 // Generic function to parse address from rich address string (for tokens/ATQ)
 export function parseAddressFromRichAddress(richAddress: string): string {
   if (!richAddress) {
-    console.warn("parseAddressFromRichAddress received undefined/null richAddress:", richAddress);
+    console.warn(
+      "parseAddressFromRichAddress received undefined/null richAddress:",
+      richAddress
+    );
     return "unknown";
   }
-  
+
   if (richAddress.startsWith("solana")) {
     return richAddress.split(":")[2];
   } else if (richAddress.startsWith("eip155")) {

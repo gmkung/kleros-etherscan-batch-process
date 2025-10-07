@@ -1,0 +1,98 @@
+[
+  {
+    "itemID": "0xa6bc26eee809bf0c0a335163cef0690aac8be7b851637e3b33141b823f9e1990",
+    "url": "https://github.com/greentea135/sushiswap-v2-pools-atq-module.git",
+    "commit": "e841ae4",
+    "chainId": "1101"
+  },
+  {
+    "itemID": "0xfaaa3f02d9d15a57e6dc4b26391368721f3892c93159cfa52a11f47ae408e4f3",
+    "url": "https://github.com/greentea135/sushiswap-v2-pools-atq-module.git",
+    "commit": "e841ae4 ",
+    "chainId": "1284"
+  },
+  {
+    "itemID": "0x4a432740ba35675bef731d0d4f35b15070d1e15551b5d24f93e54e97b5a44a26",
+    "url": "https://github.com/greentea135/sushiswap-v2-pools-atq-module.git",
+    "commit": "e841ae4",
+    "chainId": "1285"
+  },
+  {
+    "itemID": "0x600dd83625c6e1c8717c7181d7413ec7a99fdd68f11da766548a4a11443af6da",
+    "url": "https://github.com/greentea135/sushiswap-v2-pools-atq-module.git",
+    "commit": "e841ae4",
+    "chainId": "8453"
+  },
+  {
+    "itemID": "0x35f986a819d5f295cf4564f5b85b3605b54e91d0e40540dcfa4c3929dbe6db4c",
+    "url": "https://github.com/greentea135/sushiswap-v2-pools-atq-module.git",
+    "commit": "e841ae4",
+    "chainId": "42161"
+  },
+  {
+    "itemID": "0xeb17da4675144224044596a7d31d9550de81c016863e10b6f9263c3e2a97f381",
+    "url": "https://github.com/greentea135/sushiswap-v2-pools-atq-module.git",
+    "commit": "e841ae4",
+    "chainId": "42220"
+  },
+  {
+    "itemID": "0x50aea327427ea951261c129ff3bcbddd45f7a67de5eb65bf67f5041501803a0f",
+    "url": "https://github.com/greentea135/sushiswap-v2-pools-atq-module.git",
+    "commit": "e841ae4",
+    "chainId": "43111"
+  },
+  {
+    "itemID": "0x5939fa6037b582162df815c36ca92c60c2691c777baab8936c9050db45002092",
+    "url": "https://github.com/rgmgggb/velodrome-v2-pools-atq-module.git",
+    "commit": "12441e7",
+    "chainId": "10"
+  },
+  {
+    "itemID": "0xfbf012c7de4755929e9f42d8e2697a7d00b8e4aa727f562b97fe486af22ab895",
+    "url": "https://github.com/greentea135/sushiswap-v2-pools-atq-module.git",
+    "commit": "e841ae4",
+    "chainId": "43114"
+  },
+  {
+    "itemID": "0x14d6130bf511f1d7ae4933f3d8fdd97c700bcb27173ee6124f5e7acd1bae8566",
+    "url": "https://github.com/birlpossum/uniswap-43114-atq",
+    "commit": "e7b02a9",
+    "chainId": "43114"
+  },
+  {
+    "itemID": "0xff0d20926322bffba93eb5d26f9049418c1a56283e6465a28a3744aa6fcdb32f",
+    "url": "https://github.com/birlpossum/uniswap-v2-42161-atq",
+    "commit": "7816298",
+    "chainId": "42161"
+  },
+  {
+    "itemID": "0x6bb5b4b4335de8188ef499da9c1c987d5740b8b75da06571fb25956361eebba8",
+    "url": "https://github.com/birlpossum/ramses-cl-arbitrum-atq",
+    "commit": "e57f74e",
+    "chainId": "42161"
+  },
+  {
+    "itemID": "0xbd715a8827ad6f847225747bf635c0b796e4f1845364a9c900346a2087c4ad26",
+    "url": "https://github.com/birlpossum/honeyswap-gnosis-atq",
+    "commit": "eabcf58",
+    "chainId": "100"
+  },
+  {
+    "itemID": "0x25491089aae54d5ef8027531a85a02f8752b2b8a397cc606096a01cdf665e226",
+    "url": "https://github.com/birlpossum/balancer-v3-pools-avalanche",
+    "commit": "c634044",
+    "chainId": "43114"
+  },
+  {
+    "itemID": "0xcdcc20e43565b787e87f2b606634d4484e97cd3f5422f84e115a7fcd36282645",
+    "url": "https://github.com/birlpossum/balancer-v3-pools-base",
+    "commit": "94ffc0e",
+    "chainId": "8453"
+  },
+  {
+    "itemID": "0x71cba7d68b1a2808e064a7676579acd6e114d249b3e05783944ac2faf60d12ba",
+    "url": "https://github.com/birlpossum/balancer-v3-pools-gnosis",
+    "commit": "73e6cc4",
+    "chainId": "100"
+  }
+]

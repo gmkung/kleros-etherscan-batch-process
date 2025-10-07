@@ -1,0 +1,2 @@
+Error detected: "field 'metadata' not found in type: 'LItem'"
+Error detected: "field 'type' not found in type: 'ItemProp'"

@@ -4,15 +4,26 @@ This repository contains scripts for processing and exporting Kleros tags and to
 
 ## Table of Contents
 
-- [Installation](#installation)
-- [Usage](#usage)
-  - [Individual Data Export](#individual-data-export)
-    - [Exporting Tags](#exporting-tags)
-    - [Exporting Tokens](#exporting-tokens)
-  - [Batch Address Tag Query (ATQ)](#batch-address-tag-query-atq)
-- [Project Structure](#project-structure)
-- [Contributing](#contributing)
-- [License](#license)
+- [Kleros Etherscan GitHub Workflow](#kleros-etherscan-github-workflow)
+  - [Table of Contents](#table-of-contents)
+  - [Installation](#installation)
+  - [Usage](#usage)
+    - [Individual Data Export](#individual-data-export)
+      - [Exporting Tags](#exporting-tags)
+      - [Exporting Tokens](#exporting-tokens)
+    - [Batch Address Tag Query (ATQ)](#batch-address-tag-query-atq)
+      - [Prerequisites](#prerequisites)
+      - [Setup](#setup)
+      - [Running the ATQ Process](#running-the-atq-process)
+      - [Testing a Specific Module](#testing-a-specific-module)
+      - [Counting Entries](#counting-entries)
+  - [Features](#features)
+    - [Envio Integration (Default)](#envio-integration-default)
+    - [Automatic File Chunking](#automatic-file-chunking)
+    - [Dual GraphQL Support](#dual-graphql-support)
+  - [Project Structure](#project-structure)
+  - [Contributing](#contributing)
+  - [License](#license)
 
 ## Installation
 
@@ -43,7 +54,7 @@ This repository contains scripts for processing and exporting Kleros tags and to
 
 ### Individual Data Export
 
-These commands export data directly from the Kleros Curate subgraph.
+These commands export data directly from the Kleros Curate subgraph using Envio (default) or The Graph.
 
 #### Exporting Tags
 
@@ -53,7 +64,7 @@ To export Kleros tags, run the following command:
 node dist/src/cli-individual-tags-export.js
 ```
 
-This will generate CSV files in the `output/tags` directory, organized by explorer.
+This will generate CSV files in the `dist/output/tags` directory, organized by explorer.
 
 #### Exporting Tokens
 
@@ -63,7 +74,14 @@ To export Kleros tokens, run the following command:
 node dist/src/cli-individual-tokens-export.js
 ```
 
-This will generate CSV files in the `output/tokens` directory, organized by explorer.
+This will generate CSV files in the `dist/output/tokens` directory, organized by explorer.
+
+**Note:** Both commands use Envio by default. To use The Graph instead:
+
+```bash
+USE_THEGRAPH=true node dist/src/cli-individual-tags-export.js
+USE_THEGRAPH=true node dist/src/cli-individual-tokens-export.js
+```
 
 ### Batch Address Tag Query (ATQ)
 
@@ -79,11 +97,18 @@ Before running the ATQ scripts, ensure you have:
 
 #### Setup
 
-1. **Create a .env file** with The Graph's API Key:
+1. **Create a .env file** (optional - Envio is used by default):
 
-   ```
+   ```bash
+   # Optional: Use The Graph instead of Envio
+   USE_THEGRAPH=true
    THEGRAPH_API_KEY=your_api_key_here
+   
+   # Default: Envio (no API key needed)
+   # USE_THEGRAPH=false
    ```
+
+   **Note:** The scripts use Envio by default (free, no authentication). Set `USE_THEGRAPH=true` only if you want to use The Graph instead.
 
 2. **Make the scripts executable**:
    ```bash
@@ -132,6 +157,39 @@ To count the total number of contract tags retrieved:
 ```bash
 find ./dist/exports -name "*.csv" -type f -exec sh -c 'total=0; for file do count=$(grep -c "" "$file"); echo "$file: $count lines"; total=$((total + count)); done; echo "Total: $total lines"' sh {} +
 ```
+
+## Features
+
+### Envio Integration (Default)
+
+The project uses **Envio** by default for GraphQL queries:
+- ✅ **Free & Fast** - No API key required
+- ✅ **Automatic Fallback** - The Graph available if needed
+- ✅ **Clear Logging** - Shows which endpoint is being used
+- ✅ **Single Toggle** - Control all queries with one environment variable
+
+### Automatic File Chunking
+
+Large exports are automatically split into chunks:
+- **Max 100,000 lines per file** (including header)
+- Files named with `-part001`, `-part002`, etc. suffixes
+- Each chunk includes complete headers
+- Prevents issues with extremely large files
+
+### Dual GraphQL Support
+
+Switch between providers as needed:
+
+```bash
+# Use Envio (default - no API key needed)
+USE_THEGRAPH=false
+
+# Use The Graph (requires API key)
+USE_THEGRAPH=true
+THEGRAPH_API_KEY=your_api_key_here
+```
+
+For more details, see [ENVIO_MIGRATION.md](ENVIO_MIGRATION.md).
 
 ## Project Structure
 

@@ -2,10 +2,16 @@ import axios from "axios";
 import { Tag, RawTag, Token, RawToken } from "./types.js";
 import dotenv from "dotenv";
 
-dotenv.config();
+dotenv.config({ override: false });
 
 // Centralized Envio toggle - set to false to use The Graph instead
 const USE_ENVIO = process.env.USE_THEGRAPH !== "true";
+
+// Debug logging
+console.log("🔍 Environment debug:");
+console.log("  USE_THEGRAPH:", process.env.USE_THEGRAPH);
+console.log("  THEGRAPH_API_KEY:", process.env.THEGRAPH_API_KEY ? "***SET***" : "NOT SET");
+console.log("  USE_ENVIO:", USE_ENVIO);
 
 // Log which service is being used (only once)
 let hasLoggedService = false;

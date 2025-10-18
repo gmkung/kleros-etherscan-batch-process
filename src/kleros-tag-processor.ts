@@ -6,7 +6,7 @@ import {
 import { Tag, RawTag } from "./types.js";
 import dotenv from "dotenv";
 
-dotenv.config();
+dotenv.config({ override: false });
 
 const registry = "0x66260c69d03837016d88c9877e61e08ef74c59f2".toLowerCase();
 

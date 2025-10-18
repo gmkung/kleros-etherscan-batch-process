@@ -2,7 +2,7 @@ import { getDataFromCurate, transformTokenData } from "./utils.js";
 import { processKlerosTags } from "./kleros-tag-processor.js";
 import dotenv from "dotenv";
 
-dotenv.config();
+dotenv.config({ override: false });
 
 const registry = "0xee1502e29795ef6c2d60f8d7120596abe3bad990".toLowerCase();
 

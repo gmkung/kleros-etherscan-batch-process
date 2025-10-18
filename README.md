@@ -54,7 +54,7 @@ This repository contains scripts for processing and exporting Kleros tags and to
 
 ### Individual Data Export
 
-These commands export data directly from the Kleros Curate subgraph using Envio (default) or The Graph.
+These commands export data directly from the Kleros Curate subgraph using Envio (default) or The Graph. 
 
 #### Exporting Tags
 

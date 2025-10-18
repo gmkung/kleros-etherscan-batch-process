@@ -1,6 +1,6 @@
 # Kleros Etherscan GitHub Workflow
 
-This repository contains scripts for processing and exporting Kleros tags and token data. The scripts interact with the Kleros Curate subgraph to retrieve and process data, which is then exported to CSV files for further analysis or use.
+This repository contains scripts for processing and exporting Kleros tags and token data. The scripts interact with the Kleros Curate subgraph to retrieve and process data, which is then exported to CSV files for further analysis or use. 
 
 ## Table of Contents
 

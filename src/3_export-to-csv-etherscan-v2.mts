@@ -2,6 +2,7 @@ import { promises as fs } from "fs";
 import { join, dirname, basename } from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
+import { stringify } from "csv-stringify/sync";
 import { Tag, RawTag } from "./types.js";
 import { transformTagData, chainIdToExplorer } from "./utils.js";
 
@@ -34,16 +35,11 @@ function getCurrentUTCDateForSheets(): string {
 }
 
 function jsonToCSV(items: RawTag[]): string {
-  const header = Object.keys(transformTagData(items[0])) as (keyof Tag)[];
-
-  const rows = items.map((item) => {
-    const transformed = transformTagData(item);
-    return header
-      .map((col) => JSON.stringify(transformed[col] || ""))
-      .join(",");
+  const transformedItems = items.map((item) => transformTagData(item));
+  return stringify(transformedItems, {
+    header: true,
+    columns: ["Address", "Nametag", "Website", "Public Note", "Chain ID"],
   });
-
-  return [header.join(","), ...rows].join("\r\n");
 }
 
 function splitDataIntoChunks<T>(data: T[], maxItemsPerChunk: number): T[][] {
@@ -61,7 +57,7 @@ async function writeCSVChunks(
 ): Promise<void> {
   const header = Object.keys(transformTagData(tags[0])) as (keyof Tag)[];
   const maxDataRowsPerChunk = MAX_LINES_PER_FILE - 1; // -1 for header
-  
+
   if (tags.length <= maxDataRowsPerChunk) {
     // Single file - no splitting needed
     const csv = jsonToCSV(tags);
@@ -71,24 +67,28 @@ async function writeCSVChunks(
     // Split into multiple files
     const chunks = splitDataIntoChunks(tags, maxDataRowsPerChunk);
     const totalChunks = chunks.length;
-    
+
     for (let i = 0; i < chunks.length; i++) {
       const chunk = chunks[i];
       const chunkNumber = i + 1;
-      const suffix = totalChunks > 1 ? `-part${chunkNumber.toString().padStart(3, '0')}` : '';
-      const chunkFileName = baseFileName.replace('.csv', `${suffix}.csv`);
-      
-      const csv = [header.join(","), ...chunk.map((item) => {
-        const transformed = transformTagData(item);
-        return header
-          .map((col) => JSON.stringify(transformed[col] || ""))
-          .join(",");
-      })].join("\r\n");
-      
+      const suffix =
+        totalChunks > 1
+          ? `-part${chunkNumber.toString().padStart(3, "0")}`
+          : "";
+      const chunkFileName = baseFileName.replace(".csv", `${suffix}.csv`);
+
+      const transformedChunk = chunk.map((item) => transformTagData(item));
+      const csv = stringify(transformedChunk, {
+        header: true,
+        columns: ["Address", "Nametag", "Website", "Public Note", "Chain ID"],
+      });
+
       await fs.writeFile(join(exportsDir, chunkFileName), csv);
-      console.log(`Tags chunk ${chunkNumber}/${totalChunks} written to ${chunkFileName} (${chunk.length} records)`);
+      console.log(
+        `Tags chunk ${chunkNumber}/${totalChunks} written to ${chunkFileName} (${chunk.length} records)`
+      );
     }
-    
+
     console.log(`Total: ${tags.length} tags split into ${totalChunks} files`);
   }
 }
@@ -135,7 +135,7 @@ async function fetchAndProcessSubmodules() {
           const explorer = chainIdToExplorer(chainId);
           const datetime = getCurrentUTCDateForSheets();
           const baseFileName = `kleros-batch-queried-tags-${commit}-${explorer}-${datetime}.csv`;
-          
+
           await writeCSVChunks(tags, baseFileName, EXPORTS_DIR);
         }
       } catch (error) {

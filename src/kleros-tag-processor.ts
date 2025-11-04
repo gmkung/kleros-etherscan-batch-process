@@ -2,6 +2,7 @@ import {
   getDataFromCurate,
   getExplorerNameBasedOnRichAddress,
   transformTagData,
+  CurateQueryOptions,
 } from "./utils.js";
 import { Tag, RawTag } from "./types.js";
 import dotenv from "dotenv";
@@ -20,15 +21,26 @@ const contractAddressField = "Contract Address"; // Configure the field name her
 
 export async function processKlerosTags(
   customRegistry?: string,
-  customEndpoint?: string
+  customEndpoint?: string,
+  options: CurateQueryOptions = {}
 ) {
   const data = await getDataFromCurate(
     customRegistry || registry,
-    customEndpoint || endpoint
+    customEndpoint || endpoint,
+    options
   );
+  const minNumberOfRequests = options.minNumberOfRequests;
+
   const groupedData: { [key: string]: Tag[] } = {};
 
   data.forEach((item) => {
+    if (
+      typeof minNumberOfRequests === "number" &&
+      Number(item.numberOfRequests ?? 0) <= minNumberOfRequests
+    ) {
+      return;
+    }
+
     const contractAddress = item[contractAddressField];
     if (!contractAddress) {
       console.error(

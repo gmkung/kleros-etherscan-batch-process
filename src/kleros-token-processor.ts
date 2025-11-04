@@ -1,4 +1,8 @@
-import { getDataFromCurate, transformTokenData } from "./utils.js";
+import {
+  getDataFromCurate,
+  transformTokenData,
+  CurateQueryOptions,
+} from "./utils.js";
 import { processKlerosTags } from "./kleros-tag-processor.js";
 import dotenv from "dotenv";
 
@@ -14,12 +18,20 @@ const endpoint =
 
 const contractAddressField = "Address"; // Configure the field name here
 
-export async function processTokens() {
+export async function processTokens(options: CurateQueryOptions = {}) {
   const tagData = await processKlerosTags();
-  const data = await getDataFromCurate(registry, endpoint);
+  const data = await getDataFromCurate(registry, endpoint, options);
   const groupedData: { [key: string]: any[] } = {};
+  const minNumberOfRequests = options.minNumberOfRequests;
 
   data.forEach((item) => {
+    if (
+      typeof minNumberOfRequests === "number" &&
+      Number(item.numberOfRequests ?? 0) <= minNumberOfRequests
+    ) {
+      return;
+    }
+
     // Skip items without the required Address field
     if (!item[contractAddressField]) {
       console.warn(

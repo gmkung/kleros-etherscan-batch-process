@@ -5,7 +5,6 @@ import dotenv from "dotenv";
 import { stringify } from "csv-stringify/sync";
 import { Tag, RawTag } from "./types.js";
 import { transformTagData, chainIdToExplorer } from "./utils.js";
-import { processKlerosTags } from "./kleros-tag-processor.js";
 
 dotenv.config();
 
@@ -94,35 +93,6 @@ async function writeCSVChunks(
   }
 }
 
-async function writeAbsentBatchExports(exportsDir: string): Promise<void> {
-  try {
-    const groupedAbsentData = await processKlerosTags(undefined, undefined, {
-      status: "Absent",
-      minNumberOfRequests: 1,
-    });
-    const datetime = getCurrentUTCDateForSheets();
-
-    for (const [explorer, tags] of Object.entries(groupedAbsentData)) {
-      if (!tags.length) {
-        continue;
-      }
-
-      const fileName = `kleros-batch-absent-with-requests-${explorer}-${datetime}.csv`;
-      const csv = stringify(tags, {
-        header: true,
-        columns: ["Address", "Nametag", "Website", "Public Note", "Chain ID"],
-      });
-
-      await fs.writeFile(join(exportsDir, fileName), csv);
-      console.log(
-        `Absent-with-requests tags written to ${fileName} (${tags.length} records)`
-      );
-    }
-  } catch (error) {
-    console.error("Failed to write absent-with-requests batch exports:", error);
-  }
-}
-
 async function fetchAndProcessSubmodules() {
   try {
     const data: SubmoduleData[] = JSON.parse(
@@ -199,8 +169,6 @@ async function fetchAndProcessSubmodules() {
         });
       }
     }
-
-    await writeAbsentBatchExports(EXPORTS_DIR);
 
     const date = new Date()
       .toISOString()

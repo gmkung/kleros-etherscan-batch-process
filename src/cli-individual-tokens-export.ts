@@ -30,9 +30,6 @@ async function exportTokenData() {
   ensureDirectoryExists(outputDir);
   ensureDirectoryExists(tokensDir);
 
-  const regularSets: { [explorer: string]: Set<string> } = {};
-  const removalSets: { [explorer: string]: Set<string> } = {};
-
   for (const explorer in groupedData) {
     const filePath = path.join(
       tokensDir,
@@ -71,12 +68,6 @@ async function exportTokenData() {
     });
     fs.writeFileSync(filePath, csvContent);
     console.log(`File written: ${filePath}`);
-
-    regularSets[explorer] = new Set(
-      groupedData[explorer]
-        .map((item) => item["contract address"]?.toLowerCase())
-        .filter((addr): addr is string => Boolean(addr))
-    );
   }
 
   for (const explorer in groupedAbsentData) {
@@ -84,80 +75,11 @@ async function exportTokenData() {
     if (!removalItems.length) {
       continue;
     }
-    removalSets[explorer] = new Set(
-      removalItems
-        .map((item) => item["contract address"]?.toLowerCase())
-        .filter((addr): addr is string => Boolean(addr))
-    );
-    const regularSet = regularSets[explorer];
-    const filteredRemovalItems = regularSet
-      ? removalItems.filter(
-          (item) =>
-            !regularSet.has(
-              (item["contract address"] || "").toLowerCase()
-            )
-        )
-      : removalItems;
-
-    if (!filteredRemovalItems.length) {
-      continue;
-    }
-
     const filePath = path.join(
       tokensDir,
       `kleros-tokens-${explorer}-REMOVAL-${timestamp}.csv`
     );
-    const csvContent = stringify(filteredRemovalItems, {
-      header: true,
-      columns: [
-        "contract address",
-        "token name",
-        "symbol",
-        "image url",
-        "token website",
-        "token email",
-        "short description",
-        "long description",
-        "public note",
-        "blog",
-        "github",
-        "reddit",
-        "telegram",
-        "slack",
-        "wechat",
-        "facebook",
-        "linkedin",
-        "x(twitter)",
-        "discord",
-        "bitcointalk",
-        "whitepaper",
-        "ticketing",
-        "opensea",
-        "coingecko ticker",
-        "coinmarketcap ticker",
-        "project name",
-      ],
-    });
-    fs.writeFileSync(filePath, csvContent);
-    console.log(`File written: ${filePath}`);
-  }
-
-  for (const explorer in groupedData) {
-    const removalSet = removalSets[explorer];
-    if (!removalSet || removalSet.size === 0) {
-      continue;
-    }
-    const overlap = groupedData[explorer].filter((item) =>
-      removalSet.has((item["contract address"] || "").toLowerCase())
-    );
-    if (!overlap.length) {
-      continue;
-    }
-    const filePath = path.join(
-      tokensDir,
-      `kleros-tokens-${explorer}-UPDATE-${timestamp}.csv`
-    );
-    const csvContent = stringify(overlap, {
+    const csvContent = stringify(removalItems, {
       header: true,
       columns: [
         "contract address",

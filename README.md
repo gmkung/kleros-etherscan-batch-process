@@ -66,10 +66,9 @@ node dist/src/cli-individual-tags-export.js
 
 This will generate CSV files in the `dist/output/tags` directory, organized by explorer.
 
-Three file types are produced for each explorer:
-- `kleros-tags-<explorer>-<timestamp>.csv` — regular export of currently registered items.
-- `kleros-tags-<explorer>-REMOVAL-<timestamp>.csv` — addresses to be removed.
-- `kleros-tags-<explorer>-UPDATE-<timestamp>.csv` — addresses to be updated with new information.
+Two files are produced per explorer:
+- `kleros-tags-<explorer>-<timestamp>.csv` — registered items to add.
+- `kleros-tags-<explorer>-REMOVAL-<timestamp>.csv` — items marked Absent with more than one request (removals).
 
 #### Exporting Tokens
 
@@ -81,10 +80,9 @@ node dist/src/cli-individual-tokens-export.js
 
 This will generate CSV files in the `dist/output/tokens` directory, organized by explorer.
 
-As with tags, you will see three file types for tokens:
-- `kleros-tokens-<explorer>-<timestamp>.csv` — regular export of tokens.
-- `kleros-tokens-<explorer>-REMOVAL-<timestamp>.csv` — tokens to be removed.
-- `kleros-tokens-<explorer>-UPDATE-<timestamp>.csv` — tokens to be updated with new information.
+Token exports follow the same pattern:
+- `kleros-tokens-<explorer>-<timestamp>.csv` — tokens to add/update.
+- `kleros-tokens-<explorer>-REMOVAL-<timestamp>.csv` — tokens marked Absent with more than one request.
 
 **Note:** Both commands use Envio by default. To use The Graph instead:
 

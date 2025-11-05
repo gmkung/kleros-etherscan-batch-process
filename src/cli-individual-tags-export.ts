@@ -30,9 +30,6 @@ async function main() {
   ensureDirectoryExists(outputDir);
   ensureDirectoryExists(tagsDir);
 
-  const regularSets: { [explorer: string]: Set<string> } = {};
-  const removalSets: { [explorer: string]: Set<string> } = {};
-
   for (const explorer in groupedData) {
     const filePath = path.join(
       tagsDir,
@@ -50,12 +47,6 @@ async function main() {
     });
     fs.writeFileSync(filePath, csvContent);
     console.log(`File written: ${filePath}`);
-
-    regularSets[explorer] = new Set(
-      groupedData[explorer]
-        .map((item) => item.Address?.toLowerCase())
-        .filter((addr): addr is string => Boolean(addr))
-    );
   }
 
   for (const explorer in groupedAbsentData) {
@@ -63,58 +54,13 @@ async function main() {
     if (!removalItems.length) {
       continue;
     }
-    removalSets[explorer] = new Set(
-      removalItems
-        .map((item) => item.Address?.toLowerCase())
-        .filter((addr): addr is string => Boolean(addr))
-    );
-    const regularSet = regularSets[explorer];
-    const filteredRemovalItems = regularSet
-      ? removalItems.filter(
-          (item) => !regularSet.has(item.Address?.toLowerCase() || "")
-        )
-      : removalItems;
-
-    if (!filteredRemovalItems.length) {
-      continue;
-    }
-
     const filePath = path.join(
       tagsDir,
       `kleros-tags-${explorer}-REMOVAL-${timestamp}.csv`
     );
-    const csvContent = stringify(filteredRemovalItems, {
+    const csvContent = stringify(removalItems, {
       header: true,
       columns: ["Address", "Nametag", "Website", "Public Note", "Chain ID"],
-    });
-    fs.writeFileSync(filePath, csvContent);
-    console.log(`File written: ${filePath}`);
-  }
-
-  for (const explorer in groupedData) {
-    const removalSet = removalSets[explorer];
-    if (!removalSet || removalSet.size === 0) {
-      continue;
-    }
-    const overlap = groupedData[explorer].filter((item) =>
-      removalSet.has(item.Address?.toLowerCase() || "")
-    );
-    if (!overlap.length) {
-      continue;
-    }
-    const filePath = path.join(
-      tagsDir,
-      `kleros-tags-${explorer}-UPDATE-${timestamp}.csv`
-    );
-    const csvContent = stringify(overlap, {
-      header: true,
-      columns: [
-        "Address",
-        "Nametag",
-        "Website",
-        "Public Note",
-        "Chain ID",
-      ],
     });
     fs.writeFileSync(filePath, csvContent);
     console.log(`File written: ${filePath}`);

@@ -27,8 +27,39 @@ async function exportTokenData() {
   // Ensure output and tokens directories exist
   const outputDir = path.join(__dirname, "../output");
   const tokensDir = path.join(outputDir, "tokens");
+  const removalsDir = path.join(tokensDir, "removals");
   ensureDirectoryExists(outputDir);
   ensureDirectoryExists(tokensDir);
+  ensureDirectoryExists(removalsDir);
+
+  const tokenColumns = [
+    "contract address",
+    "token name",
+    "symbol",
+    "image url",
+    "token website",
+    "token email",
+    "short description",
+    "long description",
+    "public note",
+    "blog",
+    "github",
+    "reddit",
+    "telegram",
+    "slack",
+    "wechat",
+    "facebook",
+    "linkedin",
+    "x(twitter)",
+    "discord",
+    "bitcointalk",
+    "whitepaper",
+    "ticketing",
+    "opensea",
+    "coingecko ticker",
+    "coinmarketcap ticker",
+    "project name",
+  ];
 
   for (const explorer in groupedData) {
     const filePath = path.join(
@@ -37,34 +68,7 @@ async function exportTokenData() {
     );
     const csvContent = stringify(groupedData[explorer], {
       header: true,
-      columns: [
-        "contract address",
-        "token name",
-        "symbol",
-        "image url",
-        "token website",
-        "token email",
-        "short description",
-        "long description",
-        "public note",
-        "blog",
-        "github",
-        "reddit",
-        "telegram",
-        "slack",
-        "wechat",
-        "facebook",
-        "linkedin",
-        "x(twitter)",
-        "discord",
-        "bitcointalk",
-        "whitepaper",
-        "ticketing",
-        "opensea",
-        "coingecko ticker",
-        "coinmarketcap ticker",
-        "project name",
-      ],
+      columns: tokenColumns,
     });
     fs.writeFileSync(filePath, csvContent);
     console.log(`File written: ${filePath}`);
@@ -76,39 +80,12 @@ async function exportTokenData() {
       continue;
     }
     const filePath = path.join(
-      tokensDir,
+      removalsDir,
       `kleros-tokens-${explorer}-REMOVAL-${timestamp}.csv`
     );
     const csvContent = stringify(removalItems, {
       header: true,
-      columns: [
-        "contract address",
-        "token name",
-        "symbol",
-        "image url",
-        "token website",
-        "token email",
-        "short description",
-        "long description",
-        "public note",
-        "blog",
-        "github",
-        "reddit",
-        "telegram",
-        "slack",
-        "wechat",
-        "facebook",
-        "linkedin",
-        "x(twitter)",
-        "discord",
-        "bitcointalk",
-        "whitepaper",
-        "ticketing",
-        "opensea",
-        "coingecko ticker",
-        "coinmarketcap ticker",
-        "project name",
-      ],
+      columns: tokenColumns,
     });
     fs.writeFileSync(filePath, csvContent);
     console.log(`File written: ${filePath}`);

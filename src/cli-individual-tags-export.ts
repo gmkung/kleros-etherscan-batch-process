@@ -18,7 +18,7 @@ function ensureDirectoryExists(dirPath: string) {
 
 async function main() {
   const groupedData = await processKlerosTags();
-  const groupedAbsentData = await processKlerosTags(undefined, undefined, {
+  const groupedAbsentData = await processKlerosTags({
     status: "Absent",
     minNumberOfRequests: 1,
   });
@@ -27,8 +27,10 @@ async function main() {
   // Ensure output and tags directories exist
   const outputDir = path.join(__dirname, "../output");
   const tagsDir = path.join(outputDir, "tags");
+  const removalsDir = path.join(tagsDir, "removals");
   ensureDirectoryExists(outputDir);
   ensureDirectoryExists(tagsDir);
+  ensureDirectoryExists(removalsDir);
 
   for (const explorer in groupedData) {
     const filePath = path.join(
@@ -55,7 +57,7 @@ async function main() {
       continue;
     }
     const filePath = path.join(
-      tagsDir,
+      removalsDir,
       `kleros-tags-${explorer}-REMOVAL-${timestamp}.csv`
     );
     const csvContent = stringify(removalItems, {

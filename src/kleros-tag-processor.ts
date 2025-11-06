@@ -20,9 +20,9 @@ const endpoint =
 const contractAddressField = "Contract Address"; // Configure the field name here
 
 export async function processKlerosTags(
+  options: CurateQueryOptions = {},
   customRegistry?: string,
-  customEndpoint?: string,
-  options: CurateQueryOptions = {}
+  customEndpoint?: string
 ) {
   const data = await getDataFromCurate(
     customRegistry || registry,

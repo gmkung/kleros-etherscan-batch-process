@@ -273,7 +273,7 @@ export function transformTokenData(
     address,
     tokenName: item["Name"] || "",
     symbol: item["Symbol"] || "",
-    imageUrl: "https://cdn.kleros.link" + item["Logo"] || "",
+    imageUrl: item["Logo"] ? "https://cdn.kleros.link" + item["Logo"] : "",
     tokenWebsite: item["Website"] || tagInfo.Website || "",
     tokenEmail: "",
     shortDescription: tagInfo["Short Description"] || "",

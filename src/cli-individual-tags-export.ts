@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
+import { fileURLToPath, pathToFileURL } from "url";
 import { stringify } from "csv-stringify/sync";
 import { processKlerosTags } from "./kleros-tag-processor.js";
 
@@ -18,13 +18,19 @@ function ensureDirectoryExists(dirPath: string) {
 
 async function main() {
   const groupedData = await processKlerosTags();
+  const groupedAbsentData = await processKlerosTags({
+    status: "Absent",
+    minNumberOfRequests: 1,
+  });
   const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
 
   // Ensure output and tags directories exist
   const outputDir = path.join(__dirname, "../output");
   const tagsDir = path.join(outputDir, "tags");
+  const removalsDir = path.join(tagsDir, "removals");
   ensureDirectoryExists(outputDir);
   ensureDirectoryExists(tagsDir);
+  ensureDirectoryExists(removalsDir);
 
   for (const explorer in groupedData) {
     const filePath = path.join(
@@ -44,8 +50,32 @@ async function main() {
     fs.writeFileSync(filePath, csvContent);
     console.log(`File written: ${filePath}`);
   }
+
+  for (const explorer in groupedAbsentData) {
+    const removalItems = groupedAbsentData[explorer] || [];
+    if (!removalItems.length) {
+      continue;
+    }
+    const filePath = path.join(
+      removalsDir,
+      `kleros-tags-${explorer}-REMOVAL-${timestamp}.csv`
+    );
+    const csvContent = stringify(removalItems, {
+      header: true,
+      columns: ["Address", "Nametag", "Website", "Public Note", "Chain ID"],
+    });
+    fs.writeFileSync(filePath, csvContent);
+    console.log(`File written: ${filePath}`);
+  }
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+const resolvedArg = process.argv[1]
+  ? path.resolve(process.argv[1])
+  : null;
+const isDirectExecution =
+  resolvedArg !== null &&
+  import.meta.url === pathToFileURL(resolvedArg).href;
+
+if (isDirectExecution) {
   main().catch(console.error);
-} 
+}

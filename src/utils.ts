@@ -8,7 +8,7 @@ dotenv.config({ override: false });
 const USE_ENVIO = process.env.USE_THEGRAPH !== "true";
 
 // Debug logging
-console.log("🔍 Environment debug:");
+console.log("Environment debug:");
 console.log("  USE_THEGRAPH:", process.env.USE_THEGRAPH);
 console.log("  THEGRAPH_API_KEY:", process.env.THEGRAPH_API_KEY ? "***SET***" : "NOT SET");
 console.log("  USE_ENVIO:", USE_ENVIO);
@@ -16,15 +16,25 @@ console.log("  USE_ENVIO:", USE_ENVIO);
 // Log which service is being used (only once)
 let hasLoggedService = false;
 
-export async function getDataFromCurate(registry: string, endpoint: string) {
+export interface CurateQueryOptions {
+  status?: string;
+  minNumberOfRequests?: number;
+}
+
+export async function getDataFromCurate(
+  registry: string,
+  endpoint: string,
+  options: CurateQueryOptions = {}
+) {
   let offset = 0;
   const dataArray: any[] = [];
   const limit = 1000;
+  const { status = "Registered", minNumberOfRequests } = options;
 
   // Log service selection on first call
   if (!hasLoggedService) {
     console.log(
-      `📊 Using ${USE_ENVIO ? "Envio" : "The Graph"} for GraphQL queries`
+      `Using ${USE_ENVIO ? "Envio" : "The Graph"} for GraphQL queries`
     );
     console.log(`   Endpoint: ${endpoint}`);
     hasLoggedService = true;
@@ -34,19 +44,33 @@ export async function getDataFromCurate(registry: string, endpoint: string) {
     let query: string;
 
     if (USE_ENVIO) {
+      const envioWhereFilters = [
+        `registryAddress: {_eq: "${registry}"}`,
+        status ? `status: {_eq: "${status}"}` : "",
+        typeof minNumberOfRequests === "number"
+          ? `numberOfRequests: {_gt: ${minNumberOfRequests}}`
+          : "",
+      ].filter(Boolean);
+
+      const envioArgs = [
+        `limit: ${limit}`,
+        `offset: ${offset}`,
+        `order_by: {latestRequestSubmissionTime: asc}`,
+      ];
+
+      if (envioWhereFilters.length) {
+        envioArgs.push(`where: {${envioWhereFilters.join(", ")}}`);
+      }
+
       // Envio (Hasura) query format
       query = `
         {
           LItem(
-            limit: ${limit},
-            offset: ${offset},
-            order_by: {latestRequestSubmissionTime: asc},
-            where: {
-              registryAddress: {_eq: "${registry}"},
-              status: {_eq: "Registered"}
-            }
+            ${envioArgs.join(",\n            ")}
           ) {
             itemID
+            status
+            numberOfRequests
             latestRequestSubmissionTime
             props {
               label
@@ -55,18 +79,32 @@ export async function getDataFromCurate(registry: string, endpoint: string) {
           }
         }`;
     } else {
+      const graphWhereFilters = [
+        `registryAddress: "${registry}"`,
+        status ? `status: ${status}` : "",
+        typeof minNumberOfRequests === "number"
+          ? `numberOfRequests_gt: ${minNumberOfRequests}`
+          : "",
+      ].filter(Boolean);
+
+      const graphArgs = [
+        `first: ${limit}`,
+        `skip: ${offset}`,
+      ];
+
+      if (graphWhereFilters.length) {
+        graphArgs.push(`where: { ${graphWhereFilters.join(", ")} }`);
+      }
+
       // The Graph query format
       query = `
         {
           litems(
-            first: ${limit},
-            skip: ${offset},
-            where: {
-              status: Registered,
-              registryAddress: "${registry}"
-            }
+            ${graphArgs.join(",\n            ")}
           ) {
             itemID
+            status
+            numberOfRequests
             latestRequestSubmissionTime
             metadata {
               props {
@@ -96,6 +134,8 @@ export async function getDataFromCurate(registry: string, endpoint: string) {
       try {
         const flattenedItem: any = {
           itemID: litem.itemID,
+          status: litem.status,
+          numberOfRequests: Number(litem.numberOfRequests ?? 0),
           latestRequestSubmissionTime: litem.latestRequestSubmissionTime,
         };
 
@@ -233,7 +273,7 @@ export function transformTokenData(
     address,
     tokenName: item["Name"] || "",
     symbol: item["Symbol"] || "",
-    imageUrl: "https://cdn.kleros.link" + item["Logo"] || "",
+    imageUrl: item["Logo"] ? "https://cdn.kleros.link" + item["Logo"] : "",
     tokenWebsite: item["Website"] || tagInfo.Website || "",
     tokenEmail: "",
     shortDescription: tagInfo["Short Description"] || "",

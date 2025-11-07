@@ -66,6 +66,10 @@ node dist/src/cli-individual-tags-export.js
 
 This will generate CSV files in the `dist/output/tags` directory, organized by explorer.
 
+Two files are produced per explorer:
+- `kleros-tags-<explorer>-<timestamp>.csv` — registered items to add.
+- `kleros-tags-<explorer>-REMOVAL-<timestamp>.csv` — items marked Absent with more than one request (removals).
+
 #### Exporting Tokens
 
 To export Kleros tokens, run the following command:
@@ -75,6 +79,10 @@ node dist/src/cli-individual-tokens-export.js
 ```
 
 This will generate CSV files in the `dist/output/tokens` directory, organized by explorer.
+
+Token exports follow the same pattern:
+- `kleros-tokens-<explorer>-<timestamp>.csv` — tokens to add/update.
+- `kleros-tokens-<explorer>-REMOVAL-<timestamp>.csv` — tokens marked Absent with more than one request.
 
 **Note:** Both commands use Envio by default. To use The Graph instead:
 
